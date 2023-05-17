@@ -5,8 +5,8 @@
 
 state("DullahanRecollection")
 {
-	int levelComplete: 0x655F7C, 0x248, 0xC, 0xCC;
-	int fileSelect: 0x655F80, 0xB6C, 0xC, 0xCC;
+	int fileSelect: 0x443D4C, 0, 0xB4C, 0xC, 0xCC;
+	int levelComplete: 0x443D4C, 0, 0x218, 0xC, 0xCC;
 }
 
 startup
@@ -24,6 +24,8 @@ start
 
 split
 {
+	// print("fileSelect: " + current.fileSelect + "; " + old.fileSelect);
+	// print("levelComplete: " + current.levelComplete + "; " + old.levelComplete);
 	if (current.levelComplete == 1 && old.levelComplete == 0) {
 		return true;
 	}
@@ -38,19 +40,25 @@ reset
 }
 
 /*
+// File Select
+"DullahanRecollection.exe"+00443D4C, 0, B4C, C, CC
+"DullahanRecollection.exe"+00443D4C, 0, B4C, C, D8
+"DullahanRecollection.exe"+00443D4C, 0, B54, 2C, CC
+"DullahanRecollection.exe"+00443D4C, 0, B54, 2C, D8
+
 // Level Complete
-"DullahanRecollection.exe"+00655F7C, CC, C, 248
-"DullahanRecollection.exe"+00655F7C, CC, 2C, 250
-"DullahanRecollection.exe"+00655F80, CC, C, 238
-"DullahanRecollection.exe"+00655F80, CC, 2C, 240
+"DullahanRecollection.exe"+00443D4C, 0, 218, C, CC
+"DullahanRecollection.exe"+00443D4C, 0, 218, C, D8
+"DullahanRecollection.exe"+00443D4C, 0, 220, 2C, CC
+"DullahanRecollection.exe"+00443D4C, 0, 220, 2C, D8
+"DullahanRecollection.exe"+00443D4C, 0, 934, C, CC
+"DullahanRecollection.exe"+00443D4C, 0, 934, C, D8
+"DullahanRecollection.exe"+00443D4C, 0, 93C, 2C, CC
+"DullahanRecollection.exe"+00443D4C, 0, 93C, 2C, D8
 
 // In Level
 DullahanRecollection.exe+42C1E8
 
 // 0 = NG skip prologue menu; 1 = not in level; 2 = in level
 DullahanRecollection.exe+42C7F4
-
-// File Select
-"DullahanRecollection.exe"+00655F80, CC, C, B6C
-"DullahanRecollection.exe"+00655F80, CC, 2C, B74
 */
