@@ -13,6 +13,7 @@ state("DullahanRecollection")
 	double secretCreateInput: 0x445C40, 0x60, 0x10, 0x97C, 0; // 1367 (HEADLESS) (but outfit unlocks after 60 frames technically)
 	double secretCreateEsc: 0x445C40, 0x60, 0x10, 0x970, 0;
 	int passwordEntered: 0x443D4C, 0, 0x9D4, 0xC, 0xCC;
+	double a_31: 0x445C40, 0x60, 0x10, 0x4, 0x1140; // Die 100 times
 	double a_33: 0x445C40, 0x60, 0x10, 0x4, 0x1120; // Nine Head Clear
 	double a_34: 0x445C40, 0x60, 0x10, 0x4, 0x1110; // Jelly Attack Platinum
 	double a_40: 0x445C40, 0x60, 0x10, 0x4, 0x10B0; // All Achievements
@@ -28,13 +29,15 @@ startup
 	settings.CurrentDefaultParent = "splitConditions";
 	settings.Add("splitOnlyIfPuzzlePiece", false, "Puzzle piece was collected in the level");
 	settings.Add("splitOnlyIfPlatinum", false, "The level was completed on platinum");
-	settings.CurrentDefaultParent = null;
 
+	settings.CurrentDefaultParent = null;
 	settings.Add("splitOnHeadlessPassword", false, "Split on entering \"HEADLESS\" password");
-	settings.Add("splitOnNineHeadClear", false, "Split on first Nine Head Mode clear");
-	settings.SetToolTip("splitOnNineHeadClear", "It will only work on a new save file since it actually splits on getting the achievement for it");
-	settings.Add("splitOnJellyAttackPlatinum", false, "Split on first Jelly Attack platinum");
-	settings.SetToolTip("splitOnJellyAttackPlatinum", "It will only work on a new save file since it actually splits on getting the achievement for it");
+
+	settings.Add("achievements", false, "Achievements");
+	settings.CurrentDefaultParent = "achievements";
+	settings.Add("splitOn100Deaths", false, "Split on 100 deaths achievement");
+	settings.Add("splitOnNineHeadClear", false, "Split on Nine Head Mode clear achievement");
+	settings.Add("splitOnJellyAttackPlatinum", false, "Split on Jelly Attack platinum achievement");
 	settings.Add("splitOnAllAchievements", false, "Split on completing all achievements");
 
 
@@ -58,23 +61,25 @@ startup
 	vars.pieces = new List<int>();
 	vars.platinums = new List<int>();
 	vars.headlessBanki = false;
+	vars.die100Times = false;
 	vars.nineHeadClear = false;
 	vars.jellyAttackPlatinum = false;
 	vars.allAchievements = false;
 	vars.timerOldPhase = timer.CurrentPhase;
 
 	// FUNCTIONS
-	vars.Reset = (Func<bool>)(() => {
+	Action Reset = () => {
 		print("reset");
 		vars.splits.Clear();
 		vars.pieces.Clear();
 		vars.platinums.Clear();
 		vars.headlessBanki = false;
+		vars.die100Times = false;
 		vars.nineHeadClear = false;
 		vars.jellyAttackPlatinum = false;
 		vars.allAchievements = false;
-		return true;
-	});
+	};
+	vars.Reset = Reset;
 }
 
 update
@@ -139,6 +144,12 @@ split
 		return true;
 	}
 
+	// Die 100 Times Achievement
+	if (settings["splitOn100Deaths"] && !vars.die100Times && current.a_31 == 1 && old.a_31 == 0) {
+		vars.die100Times = true;
+		return true;
+	}
+
 	// Nine Head Mode Achievement
 	if (settings["splitOnNineHeadClear"] && !vars.nineHeadClear && current.a_33 == 1 && old.a_33 == 0) {
 		vars.nineHeadClear = true;
@@ -192,7 +203,7 @@ reset
 // Room ID
 DullahanRecollection.exe+6561E0
 
-// Bad Puzzle Piece (0 = collected || paused || not in level; 1 = not collected && not paused && in level)
+// Puzzle Piece (0 = collected || paused || not in level; 1 = not collected && not paused && in level)
 "DullahanRecollection.exe"+00443D4C, 0, 6E0, C, CC
 "DullahanRecollection.exe"+00443D4C, 0, 6E0, C, D8
 "DullahanRecollection.exe"+00443D4C, 0, 6E8, 2C, CC
@@ -221,6 +232,11 @@ DullahanRecollection.exe+6561E0
 "DullahanRecollection.exe"+00443D4C, 0, 9E4, 2C, D8
 
 // --- offset between achievement addresses = 0x10 (16) ---
+// global.a_31 (die 100 times)
+"DullahanRecollection.exe"+00445C40, 60, 10, 4, 1140
+"DullahanRecollection.exe"+00445C40, 60, 10, 10, 1150
+"DullahanRecollection.exe"+00445C40, 60, 10, 1C, 1160
+
 // global.a_33 (first nine head mode clear)
 "DullahanRecollection.exe"+00445C40, 60, 10, 4, 1120
 "DullahanRecollection.exe"+00445C40, 60, 10, 10, 1130
@@ -235,11 +251,4 @@ DullahanRecollection.exe+6561E0
 "DullahanRecollection.exe"+00445C40, 60, 10, 4, 10B0
 "DullahanRecollection.exe"+00445C40, 60, 10, 10, 10C0
 "DullahanRecollection.exe"+00445C40, 60, 10, 1C, 10D0
-
-
-// In Level
-DullahanRecollection.exe+42C1E8
-
-// 0 = NG skip prologue menu; 1 = not in level; 2 = in level
-DullahanRecollection.exe+42C7F4
 */
