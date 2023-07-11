@@ -3,6 +3,8 @@
 
 
 // rank update happens on the next frame after levelComplete
+// offset between achievement addresses = 0x10 (16)
+// Puzzle Piece (0 = collected || paused || not in level; 1 = not collected && not paused && in level)
 state("DullahanRecollection")
 {
 	// int levelComplete: 0x443D4C, 0, 0x218, 0xC, 0xCC;
@@ -13,7 +15,9 @@ state("DullahanRecollection")
 	double secretCreateInput: 0x445C40, 0x60, 0x10, 0x97C, 0; // 1367 (HEADLESS) (but outfit unlocks after 60 frames technically)
 	double secretCreateEsc: 0x445C40, 0x60, 0x10, 0x970, 0;
 	int passwordEntered: 0x443D4C, 0, 0x9D4, 0xC, 0xCC;
+	double a_28: 0x445C40, 0x60, 0x10, 0x4, 0x1170; // True Ending
 	double a_31: 0x445C40, 0x60, 0x10, 0x4, 0x1140; // Die 100 times
+	double a_32: 0x445C40, 0x60, 0x10, 0x4, 0x1130; // 100 Level Clears
 	double a_33: 0x445C40, 0x60, 0x10, 0x4, 0x1120; // Nine Head Clear
 	double a_34: 0x445C40, 0x60, 0x10, 0x4, 0x1110; // Jelly Attack Platinum
 	double a_40: 0x445C40, 0x60, 0x10, 0x4, 0x10B0; // All Achievements
@@ -35,7 +39,9 @@ startup
 
 	settings.Add("achievements", false, "Achievements");
 	settings.CurrentDefaultParent = "achievements";
+	settings.Add("splitOnTrueEnding", false, "Split on True Ending achievement");
 	settings.Add("splitOn100Deaths", false, "Split on 100 deaths achievement");
+	settings.Add("splitOn100Clears", false, "Split on 100 level clears achievements");
 	settings.Add("splitOnNineHeadClear", false, "Split on Nine Head Mode clear achievement");
 	settings.Add("splitOnJellyAttackPlatinum", false, "Split on Jelly Attack platinum achievement");
 	settings.Add("splitOnAllAchievements", false, "Split on completing all achievements");
@@ -61,7 +67,9 @@ startup
 	vars.pieces = new List<int>();
 	vars.platinums = new List<int>();
 	vars.headlessBanki = false;
+	vars.trueEnding = false;
 	vars.die100Times = false;
+	vars.levelClear100Times = false;
 	vars.nineHeadClear = false;
 	vars.jellyAttackPlatinum = false;
 	vars.allAchievements = false;
@@ -74,7 +82,9 @@ startup
 		vars.pieces.Clear();
 		vars.platinums.Clear();
 		vars.headlessBanki = false;
+		vars.trueEnding = false;
 		vars.die100Times = false;
+		vars.levelClear100Times = false;
 		vars.nineHeadClear = false;
 		vars.jellyAttackPlatinum = false;
 		vars.allAchievements = false;
@@ -110,6 +120,9 @@ split
 	// if (current.secretCreateInput != old.secretCreateInput) print(String.Format("secretCreateInput: {0} => {1}", old.secretCreateInput, current.secretCreateInput));
 	// if (current.secretCreateEsc != old.secretCreateEsc) print(String.Format("secretCreateEsc: {0} => {1}", old.secretCreateEsc, current.secretCreateEsc));
 	// if (current.passwordEntered != old.passwordEntered) print(String.Format("passwordEntered: {0} => {1}", old.passwordEntered, current.passwordEntered));
+	// if (current.a_28 != old.a_28) print(String.Format("a_28 (trueend): {0} => {1}", old.a_28, current.a_28));
+	// if (current.a_31 != old.a_31) print(String.Format("a_31 (100deaths): {0} => {1}", old.a_31, current.a_31));
+	// if (current.a_32 != old.a_32) print(String.Format("a_32 (100clears): {0} => {1}", old.a_32, current.a_32));
 	// if (current.a_33 != old.a_33) print(String.Format("a_33 (ninehead): {0} => {1}", old.a_33, current.a_33));
 	// if (current.a_34 != old.a_34) print(String.Format("a_34 (jellyattack): {0} => {1}", old.a_34, current.a_34));
 	// if (current.a_40 != old.a_40) print(String.Format("a_40 (allachievements): {0} => {1}", old.a_40, current.a_40));
@@ -144,9 +157,21 @@ split
 		return true;
 	}
 
+	// True Ending Achievement
+	if (settings["splitOnTrueEnding"] && !vars.trueEnding && current.a_28 == 1 && old.a_28 == 0) {
+		vars.trueEnding = true;
+		return true;
+	}
+
 	// Die 100 Times Achievement
 	if (settings["splitOn100Deaths"] && !vars.die100Times && current.a_31 == 1 && old.a_31 == 0) {
 		vars.die100Times = true;
+		return true;
+	}
+
+	// Level Clear 100 Times Achievement
+	if (settings["splitOn100Clears"] && !vars.levelClear100Times && current.a_32 == 1 && old.a_32 == 0) {
+		vars.levelClear100Times = true;
 		return true;
 	}
 
@@ -182,73 +207,3 @@ reset
 		return true;
 	}
 }
-
-/*
-// File Select
-"DullahanRecollection.exe"+00443D4C, 0, B4C, C, CC
-"DullahanRecollection.exe"+00443D4C, 0, B4C, C, D8
-"DullahanRecollection.exe"+00443D4C, 0, B54, 2C, CC
-"DullahanRecollection.exe"+00443D4C, 0, B54, 2C, D8
-
-// Level Complete
-"DullahanRecollection.exe"+00443D4C, 0, 218, C, CC
-"DullahanRecollection.exe"+00443D4C, 0, 218, C, D8
-"DullahanRecollection.exe"+00443D4C, 0, 220, 2C, CC
-"DullahanRecollection.exe"+00443D4C, 0, 220, 2C, D8
-"DullahanRecollection.exe"+00443D4C, 0, 934, C, CC
-"DullahanRecollection.exe"+00443D4C, 0, 934, C, D8
-"DullahanRecollection.exe"+00443D4C, 0, 93C, 2C, CC
-"DullahanRecollection.exe"+00443D4C, 0, 93C, 2C, D8
-
-// Room ID
-DullahanRecollection.exe+6561E0
-
-// Puzzle Piece (0 = collected || paused || not in level; 1 = not collected && not paused && in level)
-"DullahanRecollection.exe"+00443D4C, 0, 6E0, C, CC
-"DullahanRecollection.exe"+00443D4C, 0, 6E0, C, D8
-"DullahanRecollection.exe"+00443D4C, 0, 6E8, 2C, CC
-"DullahanRecollection.exe"+00443D4C, 0, 6E8, 2C, D8
-
-// global.rank
-"DullahanRecollection.exe"+00445C40, 60, 10, 70, 2B0
-"DullahanRecollection.exe"+00445C44, 60, 10, 70, 2B0
-
-// global.secretCreate INPUT
-"DullahanRecollection.exe"+00445C40, 60, 10, 97C, 0
-"DullahanRecollection.exe"+00445C44, 60, 10, 97C, 0
-"DullahanRecollection.exe"+0043550C, 0, 60, 10, 97C, 0
-
-// global.secretCreate ESC
-"DullahanRecollection.exe"+00445C40, 60, 10, 970, 0
-"DullahanRecollection.exe"+00445C44, 60, 10, 970, 0
-"DullahanRecollection.exe"+0043550C, 0, 60, 10, 970, 0
-
-// Password Entered
-"DullahanRecollection.exe"+00443D4C, 0, 9D4, C, CC
-"DullahanRecollection.exe"+00443D4C, 0, 9D4, C, D8
-"DullahanRecollection.exe"+00443D4C, 0, 9DC, 1C, CC
-"DullahanRecollection.exe"+00443D4C, 0, 9DC, 1C, D8
-"DullahanRecollection.exe"+00443D4C, 0, 9E4, 2C, CC
-"DullahanRecollection.exe"+00443D4C, 0, 9E4, 2C, D8
-
-// --- offset between achievement addresses = 0x10 (16) ---
-// global.a_31 (die 100 times)
-"DullahanRecollection.exe"+00445C40, 60, 10, 4, 1140
-"DullahanRecollection.exe"+00445C40, 60, 10, 10, 1150
-"DullahanRecollection.exe"+00445C40, 60, 10, 1C, 1160
-
-// global.a_33 (first nine head mode clear)
-"DullahanRecollection.exe"+00445C40, 60, 10, 4, 1120
-"DullahanRecollection.exe"+00445C40, 60, 10, 10, 1130
-"DullahanRecollection.exe"+00445C40, 60, 10, 1C, 1140
-
-// global.a_34 (first jelly attack platinum)
-"DullahanRecollection.exe"+00445C40, 60, 10, 4, 1110
-"DullahanRecollection.exe"+00445C40, 60, 10, 10, 1120
-"DullahanRecollection.exe"+00445C40, 60, 10, 1C, 1130
-
-// global.a_40 (all achievements)
-"DullahanRecollection.exe"+00445C40, 60, 10, 4, 10B0
-"DullahanRecollection.exe"+00445C40, 60, 10, 10, 10C0
-"DullahanRecollection.exe"+00445C40, 60, 10, 1C, 10D0
-*/
