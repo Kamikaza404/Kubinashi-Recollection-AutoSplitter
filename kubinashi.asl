@@ -41,7 +41,7 @@ startup
 	settings.CurrentDefaultParent = "achievements";
 	settings.Add("splitOnTrueEnding", false, "Split on True Ending achievement");
 	settings.Add("splitOn100Deaths", false, "Split on 100 deaths achievement");
-	settings.Add("splitOn100Clears", false, "Split on 100 level clears achievements");
+	settings.Add("splitOn100Clears", false, "Split on 100 level clears achievement");
 	settings.Add("splitOnNineHeadClear", false, "Split on Nine Head Mode clear achievement");
 	settings.Add("splitOnJellyAttackPlatinum", false, "Split on Jelly Attack platinum achievement");
 	settings.Add("splitOnAllAchievements", false, "Split on completing all achievements");
