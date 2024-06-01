@@ -18,7 +18,7 @@ state("DullahanRecollection")
 	double a_28: 0x445C40, 0x60, 0x10, 0x4, 0x1170; // True Ending
 	double a_31: 0x445C40, 0x60, 0x10, 0x4, 0x1140; // Die 100 times
 	double a_32: 0x445C40, 0x60, 0x10, 0x4, 0x1130; // 100 Level Clears
-	double a_33: 0x445C40, 0x60, 0x10, 0x4, 0x1120; // Nine Head Clear
+	double a_33: 0x445C40, 0x60, 0x10, 0x4, 0x1120; // Ninth Head Clear
 	double a_34: 0x445C40, 0x60, 0x10, 0x4, 0x1110; // Jelly Attack Platinum
 	double a_40: 0x445C40, 0x60, 0x10, 0x4, 0x10B0; // All Achievements
 }
@@ -42,7 +42,7 @@ startup
 	settings.Add("splitOnTrueEnding", false, "Split on True Ending achievement");
 	settings.Add("splitOn100Deaths", false, "Split on 100 deaths achievement");
 	settings.Add("splitOn100Clears", false, "Split on 100 level clears achievement");
-	settings.Add("splitOnNineHeadClear", false, "Split on Nine Head Mode clear achievement");
+	settings.Add("splitOnNineHeadClear", false, "Split on Ninth Head Mode clear achievement");
 	settings.Add("splitOnJellyAttackPlatinum", false, "Split on Jelly Attack platinum achievement");
 	settings.Add("splitOnAllAchievements", false, "Split on completing all achievements");
 
@@ -175,7 +175,7 @@ split
 		return true;
 	}
 
-	// Nine Head Mode Achievement
+	// Ninth Head Mode Achievement
 	if (settings["splitOnNineHeadClear"] && !vars.nineHeadClear && current.a_33 == 1 && old.a_33 == 0) {
 		vars.nineHeadClear = true;
 		return true;
